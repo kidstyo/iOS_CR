@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         TabView {
-            // iOS 工程正常
+            // iOS 工程正常，否则 mac 无法查询日历
             CalendarView()
                 .tabItem {
                     Label("Calendar", systemImage: "calendar")

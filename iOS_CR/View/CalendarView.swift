@@ -15,6 +15,8 @@ struct CalendarView: View {
 
     @State private var authorizationStatus: EKAuthorizationStatus = EKEventStore.authorizationStatus(for: .event)
 
+    @State var todaysEvents = [EKEvent]()
+
     var isFullAccessAuthorized: Bool {
         if #available(iOS 17.0, *) {
             return authorizationStatus == .fullAccess
@@ -52,13 +54,16 @@ struct CalendarView: View {
                             Label {
                                 VStack(alignment: .leading, spacing: 5, content: {
                                     Text(ca.title)
+                                        .font(.footnote)
+                                        .foregroundColor(Color(cgColor: ca.cgColor))
 
                                     Text(ca.description)
-                                        .font(.footnote)
-
+                                    Text("type: \(ca.type.rawValue)")
                                     Text(ca.calendarIdentifier)
-                                        .font(.footnote)
+                                        .font(.caption2)
                                 })
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                             } icon: {
                                 Image(systemName: "circle.fill")
                                     .font(.caption2)
@@ -72,7 +77,9 @@ struct CalendarView: View {
                 )
 
                 Section {
-                    
+                    ForEach(todaysEvents, id: \.eventIdentifier) { event in
+                        EventItem(event)
+                    }
                 } header: {
                     Text("Events")
                 }
@@ -84,6 +91,14 @@ struct CalendarView: View {
                         .fontDesign(.serif)
                         .fontWeight(.bold)
                 }
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: {
+                        todaysEvents = eventStore.events(for: selectDate, calendars: nil)
+                    }, label: {
+                        Text("Refresh")
+                    })
+                }
             })
 //            .navigationBarTitleDisplayMode(.inline)
         }
@@ -91,12 +106,17 @@ struct CalendarView: View {
             do {
                 _ = try await eventStore.verifyAuthorizationStatus()
                 authorizationStatus = EKEventStore.authorizationStatus(for: .event)
-//                calendar = eventStore.ekStore.calendar(withIdentifier: selectedCalendarIdentifier)
+    //                calendar = eventStore.ekStore.calendar(withIdentifier: selectedCalendarIdentifier)
                 await storeManager.fetchCalendars()
                 await storeManager.listenForCalendarChanges()
+
+                todaysEvents = eventStore.events(for: selectDate, calendars: nil)
             } catch {
                 print("Authorization failed. \(error.localizedDescription)")
             }
+        }
+        .onChange(of: selectDate) { oldValue, newValue in
+            todaysEvents = eventStore.events(for: selectDate, calendars: nil)
         }
     }
 }

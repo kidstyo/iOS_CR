@@ -35,7 +35,6 @@ class EventStore {
     /// Verifies the authorization status for the app.
     func verifyAuthorizationStatus() async throws -> Bool {
         print("verifyAuthorizationStatus")
-
         let status = EKEventStore.authorizationStatus(for: .event)
         switch status {
         case .notDetermined:
@@ -51,5 +50,20 @@ class EventStore {
         @unknown default:
             throw EventStoreError.unknown
         }
+    }
+
+
+    /// Fetches the events for the whole day.
+    /// - Parameter date: All events on the same day as this date will be fetched.
+    /// - Returns: Chronologically sorted events.
+    func events(for date: Date, calendars: [EKCalendar]?) -> [EKEvent] {
+        let startOfDay = Calendar.current.startOfDay(for: date)
+        let predicate = ekStore.predicateForEvents(
+            withStart: startOfDay,
+            end: startOfDay.advanced(by: 86400),
+            calendars: calendars
+        )
+        return ekStore.events(matching: predicate)
+//            .filter { $0.endDate > .now }
     }
 }
