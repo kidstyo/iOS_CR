@@ -22,28 +22,40 @@ struct EventItem: View {
 
         HStack {
             VStack(alignment: .leading) {
+                // Title
                 Text(event.title)
                     .font(.footnote.weight(.semibold))
 
+                // Date Range
                 if !event.isAllDay {
                     Text(event.startDate...event.endDate)
                         .font(.caption)
                 }
+                
+                if let notes = event.notes, !notes.isEmpty{
+                    Text(notes)
+                        .font(.caption)
+                }
+                
+                if let location = event.location, !location.isEmpty{
+                    Text(location)
+                        .font(.caption)
+                }
 
-                Text(event.eventIdentifier)
-                    .font(.caption)
+                DisclosureGroup {
+                    Text(event.eventIdentifier)
+                        .font(.caption)
 
-                Text("notes:\(event.notes ?? "nil")")
-                    .font(.caption)
+                    Text("status:\(event.status.rawValue)")
+                        .font(.caption)
 
-                Text("EKEventStatus:\(event.status.rawValue)")
-                    .font(.caption)
-
-                Text("location:\(event.location ?? "nil")")
-                    .font(.caption)
-
-                Text(event.description)
-                    .font(.caption)
+                    Text(event.description)
+                        .font(.caption)
+                } label: {
+                    Text(event.eventIdentifier.split(separator: ":").last ?? "error id")
+                        .font(.caption)
+                        .foregroundColor(.primary)
+                }
             }
             .padding(.horizontal, 4)
             .padding(.vertical, 2)

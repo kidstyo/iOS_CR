@@ -36,7 +36,6 @@ struct CalendarView: View {
                         do {
                             _ = try await eventStore.verifyAuthorizationStatus()
                             authorizationStatus = EKEventStore.authorizationStatus(for: .event)
-            //                calendar = eventStore.ekStore.calendar(withIdentifier: selectedCalendarIdentifier)
                             await storeManager.fetchCalendars()
                             await storeManager.listenForCalendarChanges()
                         } catch {
@@ -84,7 +83,6 @@ struct CalendarView: View {
                     Text("Events")
                 }
             }
-//            .listStyle(.grouped)
             .toolbar(content: {
                 ToolbarItem(placement: .principal) {
                     Text("Calendar")
@@ -100,13 +98,11 @@ struct CalendarView: View {
                     })
                 }
             })
-//            .navigationBarTitleDisplayMode(.inline)
         }
         .task{
             do {
                 _ = try await eventStore.verifyAuthorizationStatus()
                 authorizationStatus = EKEventStore.authorizationStatus(for: .event)
-    //                calendar = eventStore.ekStore.calendar(withIdentifier: selectedCalendarIdentifier)
                 await storeManager.fetchCalendars()
                 await storeManager.listenForCalendarChanges()
 
