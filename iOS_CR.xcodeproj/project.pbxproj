@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8C4E95912BEBBC8D000E5788 /* EventCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4E95902BEBBC8D000E5788 /* EventCalendar.swift */; };
 		8C5A8E692B9B65350077EFE2 /* EventItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5A8E682B9B65350077EFE2 /* EventItem.swift */; };
 		8CDE063B2B9B3FD000D2004C /* iOS_CRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE063A2B9B3FD000D2004C /* iOS_CRApp.swift */; };
 		8CDE063D2B9B3FD000D2004C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE063C2B9B3FD000D2004C /* ContentView.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8C4E95902BEBBC8D000E5788 /* EventCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCalendar.swift; sourceTree = "<group>"; };
 		8C5A8E682B9B65350077EFE2 /* EventItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventItem.swift; sourceTree = "<group>"; };
 		8CDE06372B9B3FD000D2004C /* iOS_CR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS_CR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CDE063A2B9B3FD000D2004C /* iOS_CRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS_CRApp.swift; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 				8CDE06522B9B3FEA00D2004C /* ReminderView.swift */,
 				8CDE06532B9B3FEA00D2004C /* CalendarView.swift */,
 				8C5A8E682B9B65350077EFE2 /* EventItem.swift */,
+				8C4E95902BEBBC8D000E5788 /* EventCalendar.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -182,6 +185,7 @@
 				8CDE064E2B9B3FE600D2004C /* EventStoreManager.swift in Sources */,
 				8CDE06542B9B3FEA00D2004C /* ReminderView.swift in Sources */,
 				8CDE064D2B9B3FE600D2004C /* ReminderStore.swift in Sources */,
+				8C4E95912BEBBC8D000E5788 /* EventCalendar.swift in Sources */,
 				8CDE063D2B9B3FD000D2004C /* ContentView.swift in Sources */,
 				8CDE063B2B9B3FD000D2004C /* iOS_CRApp.swift in Sources */,
 				8C5A8E692B9B65350077EFE2 /* EventItem.swift in Sources */,

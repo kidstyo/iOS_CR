@@ -51,8 +51,15 @@ struct EventItem: View {
 
                     Text(event.description)
                         .font(.caption)
+                    
+                    Text(event.calendarItemIdentifier)
+                        .font(.caption)
+                    
+                    // 似乎不同设备一致
+                    Text(event.calendarItemExternalIdentifier)
+                        .font(.caption)
                 } label: {
-                    Text(event.eventIdentifier.split(separator: ":").last ?? "error id")
+                    Text(event.calendarItemExternalIdentifier)
                         .font(.caption)
                         .foregroundColor(.primary)
                 }

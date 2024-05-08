@@ -12,6 +12,7 @@ struct CalendarView: View {
     @State private var selectDate: Date = .init()
     @StateObject private var storeManager: EventStoreManager = EventStoreManager()
     private var eventStore: EventStore { EventStore.shared }
+    let ekStore = EKEventStore()
 
     @State private var authorizationStatus: EKAuthorizationStatus = EKEventStore.authorizationStatus(for: .event)
 
@@ -47,27 +48,20 @@ struct CalendarView: View {
                         .foregroundStyle(isFullAccessAuthorized ? .green : .red)
                 })
 
+                if let defaultCalendarForNewEvents = ekStore.defaultCalendarForNewEvents{
+                    Text("defaultCalendarForNewEvents")
+                    EventCalendar(ca: defaultCalendarForNewEvents)
+                }
+                
+                if let defaultCalendarForNewReminders = ekStore.defaultCalendarForNewReminders(){
+                    Text("defaultCalendarForNewReminders")
+                    EventCalendar(ca: defaultCalendarForNewReminders)
+                }
+
                 DisclosureGroup(
                     content: {
                         ForEach(storeManager.writableCalendars, id:\.self){ca in
-                            Label {
-                                VStack(alignment: .leading, spacing: 5, content: {
-                                    Text(ca.title)
-                                        .font(.footnote)
-                                        .foregroundColor(Color(cgColor: ca.cgColor))
-
-                                    Text(ca.description)
-                                    Text("type: \(ca.type.rawValue)")
-                                    Text(ca.calendarIdentifier)
-                                        .font(.caption2)
-                                })
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            } icon: {
-                                Image(systemName: "circle.fill")
-                                    .font(.caption2)
-                                    .foregroundColor(Color(cgColor: ca.cgColor))
-                            }
+                            EventCalendar(ca: ca)
                         }
                     },
                     label: {
@@ -78,6 +72,22 @@ struct CalendarView: View {
                 Section {
                     ForEach(todaysEvents, id: \.eventIdentifier) { event in
                         EventItem(event)
+                            .contextMenu {
+                                Button {
+                                    removeEvent(uId: event.calendarItemExternalIdentifier)
+                                    addEvent(title: "title \(Int.random(in: 0...1000))", notes: "notes \(Int.random(in: 0...1000))", start: Date().addingTimeInterval(-Double(Int.random(in: 0..<3600))), end: Date().addingTimeInterval(TimeInterval(Int.random(in: 0..<3600))), location: "location \(Int.random(in: 0...1000))", calendar: storeManager.writableCalendars[Int.random(in: 0..<storeManager.writableCalendars.count)])
+                                    refresh()
+                                } label: {
+                                    Text("Update")
+                                }
+                                
+                                Button(role: .destructive) {
+                                    removeEvent(uId: event.calendarItemExternalIdentifier)
+                                    refresh()
+                                } label: {
+                                    Text("Delete")
+                                }
+                            }
                     }
                 } header: {
                     Text("Events")
@@ -90,9 +100,20 @@ struct CalendarView: View {
                         .fontWeight(.bold)
                 }
 
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        Task{
+                            addEvent(calendar: nil)
+                            refresh()
+                        }
+                    }, label: {
+                        Text("Plus")
+                    })
+                }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
-                        todaysEvents = eventStore.events(for: selectDate, calendars: nil)
+                        refresh()
                     }, label: {
                         Text("Refresh")
                     })
@@ -113,6 +134,36 @@ struct CalendarView: View {
         }
         .onChange(of: selectDate) { oldValue, newValue in
             todaysEvents = eventStore.events(for: selectDate, calendars: nil)
+        }
+    }
+    
+    func refresh(){
+        todaysEvents = eventStore.events(for: selectDate, calendars: nil)
+    }
+    
+    func addEvent(title: String = "title", notes: String = "notes", start: Date = Date(), end: Date = Date().addingTimeInterval(3600), location: String = "localtion", calendar: EKCalendar?){
+        Task{
+            let ekEvent = EKEvent(eventStore: ekStore)
+            ekEvent.title = title
+            ekEvent.notes = notes + "\n" + ekEvent.calendarItemExternalIdentifier
+            ekEvent.location = location
+            
+            ekEvent.startDate = start
+            ekEvent.endDate = end
+            ekEvent.calendar = calendar ?? ekStore.defaultCalendarForNewEvents
+            try ekStore.save(ekEvent, span: .thisEvent)
+        }
+    }
+    
+    func removeEvent(uId: String){
+        if let ekEvent = ekStore.calendarItems(withExternalIdentifier: uId).first as? EKEvent {
+            do {
+                try ekStore.remove(ekEvent, span: .thisEvent)
+            } catch {
+                print("EventStore removeScheduleEvent \(error.localizedDescription)")
+            }
+        } else {
+            print("EventStore removeScheduleEvent Event not found")
         }
     }
 }
