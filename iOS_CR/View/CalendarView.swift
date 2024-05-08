@@ -126,7 +126,6 @@ struct CalendarView: View {
                 authorizationStatus = EKEventStore.authorizationStatus(for: .event)
                 await storeManager.fetchCalendars()
                 await storeManager.listenForCalendarChanges()
-
                 todaysEvents = eventStore.events(for: selectDate, calendars: nil)
             } catch {
                 print("Authorization failed. \(error.localizedDescription)")
@@ -145,12 +144,13 @@ struct CalendarView: View {
         Task{
             let ekEvent = EKEvent(eventStore: ekStore)
             ekEvent.title = title
-            ekEvent.notes = notes + "\n" + ekEvent.calendarItemExternalIdentifier
             ekEvent.location = location
-            
             ekEvent.startDate = start
             ekEvent.endDate = end
             ekEvent.calendar = calendar ?? ekStore.defaultCalendarForNewEvents
+            try ekStore.save(ekEvent, span: .thisEvent)
+            
+            ekEvent.notes = notes + "\n" + ekEvent.calendarItemExternalIdentifier
             try ekStore.save(ekEvent, span: .thisEvent)
         }
     }
